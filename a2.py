@@ -283,8 +283,8 @@ if __name__ == "__main__":
     # --------------------------
     # USER CONFIGURATION - PATHS
     # --------------------------
-    SYNTHETIC_DATA_FOLDER = "/Users/jiangyutang/Desktop/complexnerwork/A3_synthetic_networks"
-    REAL_DATA_FOLDER = "/Users/jiangyutang/Desktop/complexnerwork/A3_primary_school_network"
+    SYNTHETIC_DATA_FOLDER = "./A3_synthetic_networks"
+    REAL_DATA_FOLDER = "./A3_primary_school_network"
     OUTPUT_ROOT_FOLDER = "./community_detection_assignment_results"
 
     # Run full assignment workflow
