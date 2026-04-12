@@ -254,6 +254,44 @@ def task2_analyze_real_network(real_data_dir, output_dir):
         os.path.join(result_dir, f"comm_real_weighted_{selected_algo}.clu")
     )
 
+    # --------------------------
+    # NEW: Generate Fixed Layout (Kamada-Kawai with inverse weights)
+    # --------------------------
+    inv_weights = 1 / (edge_weights + 1e-6)  # Avoid division by zero
+    fixed_layout = graph_weighted.layout_kamada_kawai(weights=inv_weights)
+    layout_coords = np.array(fixed_layout.coords)  # Convert to numpy array for matplotlib
+
+    # --------------------------
+    # NEW: Task 2 Visualization (Unweighted vs Weighted)
+    # --------------------------
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 8))
+
+    # --- Plot 1: Unweighted Network ---
+    membership_u = np.array(comm_unweighted.membership)
+    unique_comms_u = np.unique(membership_u)
+    palette_u = plt.cm.tab20(np.linspace(0, 1, len(unique_comms_u)))
+    color_map_u = {c: tuple(palette_u[i]) for i, c in enumerate(unique_comms_u)}
+    colors_u = [color_map_u[m] for m in membership_u]
+    
+    ax1.scatter(layout_coords[:, 0], layout_coords[:, 1], s=100, c=colors_u, edgecolors='k', alpha=0.8)
+    ax1.set_title("Unweighted Network", fontsize=16)
+    ax1.axis('off')
+
+    # --- Plot 2: Weighted Network ---
+    membership_w = np.array(comm_weighted.membership)
+    unique_comms_w = np.unique(membership_w)
+    palette_w = plt.cm.tab20(np.linspace(0, 1, len(unique_comms_w)))
+    color_map_w = {c: tuple(palette_w[i]) for i, c in enumerate(unique_comms_w)}
+    colors_w = [color_map_w[m] for m in membership_w]
+    
+    ax2.scatter(layout_coords[:, 0], layout_coords[:, 1], s=100, c=colors_w, edgecolors='k', alpha=0.8)
+    ax2.set_title("Weighted Network", fontsize=16)
+    ax2.axis('off')
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(figure_dir, "real_network_comparison.png"), dpi=300, bbox_inches='tight')
+    plt.close()
+
     # Add detected community labels to metadata (for composition analysis)
     valid_vertex_ids = metadata["vertex_id"].values
     metadata["detected_community"] = [comm_weighted.membership[v] for v in valid_vertex_ids]
